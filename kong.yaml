@@ -49,11 +49,20 @@ spec:
         app: kong
     spec:
       containers:
+      # Fix dns problem https://github.com/Mashape/kong/issues/1601#issuecomment-245474404
+      - name: go-dnsmasq
+        image: "janeczku/go-dnsmasq:release-1.0.5"
+        args:
+          - --listen
+          - "127.0.0.1:53"
+          - --default-resolver
+          - --append-search-domains
+          - --hostsfile=/etc/hosts
       - name: kong
-        image: mashape/kong:cassandra3
+        image: kong:0.9.5
         env:
           - name: KONG_DATABASE
-            value: cassandra
+            value: postgres
           - name: KONG_CASSANDRA_CONTACT_POINTS
             value: kong-database
           - name: KONG_PG_USER
@@ -63,11 +72,7 @@ spec:
           - name: KONG_PG_PASSWORD
             value: kong
           - name: KONG_PG_HOST
-            value: kong-database 
-          - name: KONG_DNS_RESOLVER
-            value: 10.39.240.10
-          - name: KONG_DNSMASQ
-            value: "off"
+            value: kong-database
           - name: KONG_CASSANDRA_KEYSPACE
             value: kong
         ports:
