@@ -90,7 +90,7 @@ Kong can easily be provisioned to Kubernetes cluster using the following steps:
 
 3. **Using Kong:**
 
-    Quickly learn how to use Kong with the [5-minute Quickstart](/docs/latest/getting-started/quickstart).
+    Quickly learn how to use Kong with the [5-minute Quickstart](https://getkong.org/docs/latest/getting-started/quickstart/).
 
 ## Important Note
 

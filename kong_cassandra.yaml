@@ -56,6 +56,21 @@ spec:
             value: cassandra
           - name: KONG_CASSANDRA_CONTACT_POINTS
             value: cassandra.default.svc.cluster.local
+<<<<<<< HEAD:kong_cassandra.yaml
+=======
+          - name: KONG_PG_USER
+            value: kong
+          - name: KONG_PG_DATABASE
+            value: kong
+          - name: KONG_PG_PASSWORD
+            value: kong
+          - name: KONG_PG_HOST
+            value: postgres 
+          - name: KONG_DNS_RESOLVER
+            value: 10.100.0.10
+          - name: KONG_DNSMASQ
+            value: "off"
+>>>>>>> master:kong.yaml
           - name: KONG_CASSANDRA_KEYSPACE
             value: kong
           - name: KONG_CASSANDRA_REPL_FACTOR
