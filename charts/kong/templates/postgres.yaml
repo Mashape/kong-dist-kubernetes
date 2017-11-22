@@ -1,0 +1,47 @@
+{{ if and (.Values.backingStoreConfig.deployment.deployStore) (eq .Values.backingStoreConfig.KONG_DATABASE "postgres") }}
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.backingStoreConfig.KONG_PG_HOST }}
+spec:
+  ports:
+  - name: pgql
+    port: {{ .Values.backingStoreConfig.KONG_PG_PORT }}
+    targetPort: 5432
+    protocol: TCP
+  selector:
+    app: {{ .Release.Name }}-{{ .Values.backingStoreConfig.deployment.storeDeploymentName }}
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.backingStoreConfig.deployment.storeDeploymentName }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-{{ .Values.backingStoreConfig.deployment.storeDeploymentName }}
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:9.4
+          env:
+            - name: POSTGRES_USER
+              value: {{ .Values.backingStoreConfig.KONG_PG_USER }}
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.backingStoreConfig.KONG_PG_PASSWORD }}
+            - name: POSTGRES_DB
+              value: {{ .Values.backingStoreConfig.KONG_PG_DATABASE }}
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: pg-data
+      volumes:
+        - name: pg-data
+          emptyDir: {}
+{{ end }}

@@ -1,0 +1,68 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.kongName }}
+spec:
+  replicas: {{ .Values.kongInstanceReplicaCount }}
+  template:
+    metadata:
+      labels:
+        name: {{ .Release.Name }}-{{ .Values.kongName }}
+        app:  {{ .Release.Name }}-{{ .Values.kongName }}
+    spec:
+      containers:
+      - name: kong
+        image: kong
+        env:
+          - name: KONG_DATABASE
+            value: {{ .Values.backingStoreConfig.KONG_DATABASE}}
+          - name: KONG_LOG_LEVEL
+            value: {{ .Values.backingStoreConfig.KONG_LOG_LEVEL}}
+          - name: KONG_HOST_IP
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: status.podIP
+        {{ if eq .Values.backingStoreConfig.KONG_DATABASE "cassandra"}}
+          {{ if .Values.backingStoreConfig.deployment.deployStore}}
+          - name: KONG_CASSANDRA_CONTACT_POINTS
+            value: {{ .Release.Name }}-{{ .Values.backingStoreConfig.KONG_CASSANDRA_CONTACT_POINTS }}.{{ .Release.Namespace }}.svc.cluster.local
+          {{ else }}
+          - name: KONG_CASSANDRA_CONTACT_POINTS
+            value: {{ .Values.backingStoreConfig.KONG_CASSANDRA_CONTACT_POINTS }}
+          {{end}}
+          - name: KONG_CASSANDRA_KEYSPACE
+            value: {{ .Values.backingStoreConfig.KONG_CASSANDRA_KEYSPACE}}
+          - name: KONG_CASSANDRA_REPL_FACTOR
+            value: {{ .Values.backingStoreConfig.KONG_CASSANDRA_REPL_FACTOR | quote }}
+        {{ else if eq .Values.backingStoreConfig.KONG_DATABASE "postgres"}} 
+          - name: KONG_PG_DATABASE
+            value: {{ .Values.backingStoreConfig.KONG_PG_DATABASE }}
+          - name: KONG_PG_USER
+            value: {{ .Values.backingStoreConfig.KONG_PG_USER }}
+          - name: KONG_PG_PASSWORD
+            value: {{ .Values.backingStoreConfig.KONG_PG_PASSWORD }}
+            {{ if .Values.backingStoreConfig.deployment.deployStore}}
+          - name: KONG_PG_HOST
+            value: {{ .Release.Name }}-{{ .Values.backingStoreConfig.KONG_PG_HOST }}.{{ .Release.Namespace }}.svc.cluster.local
+            {{ else }}
+          - name: KONG_PG_HOST
+            value: {{ .Values.backingStoreConfig.KONG_PG_HOST }}
+          - name: KONG_PG_PORT
+            value: {{ .Values.backingStoreConfig.KONG_PG_PORT}}
+            {{ end }}
+        {{ end }}
+        command: [ "/bin/sh", "-c", "KONG_CLUSTER_ADVERTISE=$(KONG_HOST_IP):7946 KONG_NGINX_DAEMON='off' kong start --vv" ]
+        ports:
+        - name: admin
+          containerPort: {{ .Values.services.adminService.containerPort }}
+          protocol: TCP
+        - name: admin-ssl
+          containerPort: {{ .Values.services.adminService.containerSslPort }}
+          protocol: TCP
+        - name: proxy
+          containerPort: {{ .Values.services.proxyService.containerPort }}
+          protocol: TCP
+        - name: proxy-ssl
+          containerPort: {{ .Values.services.proxyService.containerSslPort }}
+          protocol: TCP

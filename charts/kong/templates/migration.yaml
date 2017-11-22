@@ -1,0 +1,38 @@
+{{ if .Values.backingStoreConfig.deployment.deployStore }}
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.backingStoreConfig.KONG_PG_HOST }}-migration
+spec:
+  template:
+    metadata:
+      name: kong-migration
+    spec:
+      containers:
+      - name: kong-migration
+        image: kong
+        env:
+          - name: KONG_NGINX_DAEMON
+            value: 'off'
+          {{ if eq .Values.backingStoreConfig.KONG_DATABASE "postgres" }}
+          - name: KONG_PG_DATABASE
+            value: {{ .Values.backingStoreConfig.KONG_PG_DATABASE }}
+          - name: KONG_PG_USER
+            value: {{ .Values.backingStoreConfig.KONG_PG_USER }}
+          - name: KONG_PG_PASSWORD
+            value: {{ .Values.backingStoreConfig.KONG_PG_PASSWORD }}
+          - name: KONG_PG_HOST
+            value: {{ .Release.Name }}-{{ .Values.backingStoreConfig.KONG_PG_HOST }}.{{ .Release.Namespace }}.svc.cluster.local
+          {{ else if eq .Values.backingStoreConfig.KONG_DATABASE "cassandra" }}
+          - name: KONG_DATABASE
+            value: {{ .Values.backingStoreConfig.KONG_DATABASE }}
+          - name: KONG_CASSANDRA_CONTACT_POINTS
+            value: {{ .Values.backingStoreConfig.KONG_CASSANDRA_CONTACT_POINTS }}
+          - name: KONG_CASSANDRA_KEYSPACE
+            value: {{ .Values.backingStoreConfig.KONG_CASSANDRA_KEYSPACE }}
+          {{ end }}
+        command: [ "/bin/sh", "-c", "kong migrations up --vv" ]
+      restartPolicy: Never
+
+{{ end }}
