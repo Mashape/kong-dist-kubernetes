@@ -26,6 +26,12 @@ Kong can easily be provisioned to Kubernetes cluster using the following steps:
     Note: Included manifest files only support Kong v0.11.x, for 0.10.x please
     checkout the [tag 1.0.0](https://github.com/Mashape/kong-dist-kubernetes/tree/1.0.0)
 
+    Note: Before running kubectl on `gcloud` you would need to fetch the credentials for a running cluster which as simple as running following command
+
+```bash
+gcloud container clusters get-credentials NAME [--zone=ZONE, -z ZONE] [GCLOUD_WIDE_FLAG …]
+```
+
 2.  **Deploy a GKE cluster**
 
     You need [gcloud](https://cloud.google.com/sdk/) and
