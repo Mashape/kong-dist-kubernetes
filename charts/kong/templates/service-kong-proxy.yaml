@@ -4,10 +4,8 @@ metadata:
   name: {{ template "kong.fullname" . }}-proxy
 spec:
   type: {{ .Values.kong.proxy.type }}
-  {{- if eq .Values.kong.proxy.type "LoadBalancer" }}
-  {{- if .Values.kong.proxy.loadBalancerIP }}
+  {{- if and (eq .Values.kong.proxy.type "LoadBalancer") .Values.kong.proxy.loadBalancerIP }}
   loadBalancerIP: {{ .Values.kong.proxy.loadBalancerIP }}
-  {{- end }}
   {{- end }}
   ports:
   - name: kong-proxy
