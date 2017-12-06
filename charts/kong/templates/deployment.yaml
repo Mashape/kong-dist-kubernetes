@@ -17,6 +17,10 @@ spec:
         heritage: "{{ .Release.Service }}"
         release: "{{ .Release.Name }}"
     spec:
+    {{- if .Values.kong.enterprise }}
+      imagePullSecrets:
+        - name: "{{ .Values.kong.imagePullSecrets }}"
+    {{- end }}
       containers:
       - name: {{ template "kong.fullname" . }}
         image: {{ .Values.kong.image }}
@@ -74,6 +78,12 @@ spec:
           - name: KONG_PG_PORT
             value: {{ .Values.kong.database.postgres.port | quote }}
         {{- end }}
+        {{- if .Values.kong.enterprise }}
+          - name: KONG_VITALS
+            value: '{{ .Values.kong.enterprise.vitals }}'
+          - name: KONG_LICENSE_DATA
+            value: '{{ .Values.kong.enterprise.license }}'
+        {{- end }}
         {{- range $key, $val := .Values.kong.customConfig }}
           - name: KONG_{{ $key | upper}}
             value: {{ $val | quote }}
@@ -100,6 +110,11 @@ spec:
         {{- else}}
         - name: proxy
           containerPort: {{ default 8000 .Values.kong.proxy.containerPort }}
+          protocol: TCP
+        {{- end }}
+        {{- if .Values.kong.enterprise }}
+        - name: admin-gui
+          containerPort: {{ .Values.kong.admin.containerGUIPort }}
           protocol: TCP
         {{- end }}
         resources:
