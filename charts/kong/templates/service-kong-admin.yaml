@@ -19,5 +19,11 @@ spec:
     targetPort: {{ default 8001 .Values.kong.admin.containerPort }}
     protocol: TCP
   {{- end }}
+  {{- if .Values.kong.enterprise }}
+  - name: kong-admin-gui
+    port: {{ .Values.kong.admin.serviceGUIPort }}
+    targetPort: {{ .Values.kong.admin.containerGUIPort }}
+    protocol: TCP
+  {{- end }}
   selector:
     app: {{ template "kong.fullname" . }}
