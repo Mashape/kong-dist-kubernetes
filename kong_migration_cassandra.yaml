@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
       - name: kong-migration
-        image: kong
+        image: kong:1.0rc3
         env:
           - name: KONG_NGINX_DAEMON
             value: 'off'
@@ -19,5 +19,5 @@ spec:
             value: cassandra
           - name: KONG_CASSANDRA_KEYSPACE
             value: kong
-        command: [ "/bin/sh", "-c", "kong migrations up" ]
+        command: [ "/bin/sh", "-c", "kong migrations bootstrap" ]
       restartPolicy: Never
