@@ -80,7 +80,7 @@ spec:
     spec:
       containers:
       - name: kong
-        image: kong:1.0rc3
+        image: kong:1.0
         env:
           - name: KONG_ADMIN_LISTEN
             value: "0.0.0.0:8001, 0.0.0.0:8444 ssl"
