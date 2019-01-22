@@ -19,5 +19,5 @@ spec:
             value: postgres.default.svc.cluster.local
           - name: KONG_LICENSE_DATA
             value: 'YOUR_LICENSE_HERE'
-        command: [ "/bin/sh", "-c", "kong migrations up" ]
+        command: [ "/bin/sh", "-c", "kong migrations bootstrap" ]
       restartPolicy: Never
