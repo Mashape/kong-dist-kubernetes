@@ -1,3 +1,16 @@
+KONG_BUILD_TOOLS_VERSION?=master
+KONG_TEST_DATABASE?=postgres
+
+setup_tests:
+	-rm -rf kong-build-tools
+	git clone https://github.com/Kong/kong-build-tools.git
+	cd kong-build-tools; \
+	git fetch; \
+	git reset --hard origin/$(KONG_BUILD_TOOLS_VERSION)
+
+test:
+	make run_${KONG_TEST_DATABASE}
+	./run_tests.sh
 
 k8s_setup:
 	kubectl apply -f kong-namespace.yaml

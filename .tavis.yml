@@ -1,0 +1,15 @@
+dist: xenial
+sudo: false
+
+language: generic
+
+env:
+  matrix:
+    - KONG_TEST_DATABASE=postgres
+    - KONG_TEST_DATABASE=cassandra
+
+install:
+  - make setup_tests
+  - cd kong-build-tools && make setup_tests
+script:
+  - make test
