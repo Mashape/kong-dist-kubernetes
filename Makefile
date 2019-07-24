@@ -1,12 +1,11 @@
-KONG_BUILD_TOOLS_VERSION?=master
+KONG_BUILD_TOOLS?=1.0.1
 KONG_TEST_DATABASE?=postgres
 
 setup_tests:
 	-rm -rf kong-build-tools
 	git clone https://github.com/Kong/kong-build-tools.git
 	cd kong-build-tools; \
-	git fetch; \
-	git reset --hard origin/$(KONG_BUILD_TOOLS_VERSION)
+	git reset --hard $(KONG_BUILD_TOOLS_VERSION); \
 
 test:
 	make run_${KONG_TEST_DATABASE}

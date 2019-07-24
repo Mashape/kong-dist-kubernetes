@@ -10,6 +10,6 @@ env:
 
 install:
   - make setup_tests
-  - cd kong-build-tools && make setup_tests
+  - ./kong-build-tools/.ci/setup_ci.sh
 script:
   - make test
