@@ -5,7 +5,7 @@ setup-kong-build-tools:
 	-rm -rf kong-build-tools; \
 	git clone https://github.com/Kong/kong-build-tools.git; fi
 	cd kong-build-tools; \
-	git reset --hard $(KONG_BUILD_TOOLS); \
+	git reset --hard ${KONG_BUILD_TOOLS}; \
 
 test:
 	make run_${KONG_TEST_DATABASE}
