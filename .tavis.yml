@@ -16,5 +16,6 @@ matrix:
 install:
   - make setup-kong-build-tools
   - pushd kong-build-tools && make setup-ci && popd
+
 script:
   - make test
