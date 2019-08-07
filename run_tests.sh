@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
 
 counter=0
