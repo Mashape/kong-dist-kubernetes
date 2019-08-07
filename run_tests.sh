@@ -1,7 +1,24 @@
 #!/bin/bash
 
-while [[ "$(kubectl get deployment -n kong | grep 0/1 | wc -l)" != 0 ]]; do
-  echo "waiting for Kong to be ready"
+export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
+
+while [[ "$(kubectl get pod --all-namespaces | grep -v Running | grep -v Completed | wc -l)" != 1 ]]; do
+  kubectl get pod --all-namespaces -o wide
+  echo "waiting for K8s to be ready"
+  sleep 10;
+done
+
+make run_$KONG_TEST_DATABASE
+
+while [[ "$(kubectl get deployment kong-control-plane -n kong | tail -n +2 | awk '{print $4}')" != 1 ]]; do
+  echo "waiting for Kong control plane to be ready"
+  kubectl get pod --all-namespaces -o wide
+  sleep 10;
+done
+
+while [[ "$(kubectl get deployment kong-ingress-data-plane -n kong | tail -n +2 | awk '{print $4}')" != 1 ]]; do
+  echo "waiting for Kong data plane to be ready"
+  kubectl get pod --all-namespaces -o wide
   sleep 10;
 done
 
