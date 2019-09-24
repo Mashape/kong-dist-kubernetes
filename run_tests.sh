@@ -57,7 +57,7 @@ done
 
 KONG_VERSION=$(kubectl exec -n kong -it $(kubectl get pods -n kong | grep kong | head -n 1 | awk '{print $1}') -- kong version | tr -d '[:space:]')
 
-kubectl port-forward -n kong deployment/kong-control-plane 8001 > /dev/null 2>&1
+kubectl port-forward -n kong deployment/kong-control-plane 8001 &
 HOST="$(kubectl get nodes --namespace kong -o jsonpath='{.items[0].status.addresses[0].address}')"
 echo $HOST
 PROXY_PORT=$(kubectl get svc --namespace kong kong-ingress-data-plane -o jsonpath='{.spec.ports[0].nodePort}')
